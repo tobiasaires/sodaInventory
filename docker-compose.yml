@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  app:
+    build: .
+    container_name: app
+    volumes:
+      - .:/var/www/app
+    ports:
+      - "80:8080"
+    depends_on:
+      - mysql
