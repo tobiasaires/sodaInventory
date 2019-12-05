@@ -13,11 +13,6 @@ docker-compose exec app npm install
 echo [+] Generating key
 docker-compose exec app php artisan key:generate
 
-echo [+] Making migrates
-docker-compose exec app php artisan migrate:fresh
-
-echo [+] Making seeds
-docker-compose exec app php artisan db:seed
 
 echo [+] Information of new containers
 docker ps
