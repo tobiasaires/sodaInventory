@@ -9,4 +9,8 @@ interface SodaRepositoryInterface
     public function checkIfExists(string $brand, string $measure);
 
     public function update(array $attributes, string $id);
+
+    public function getAll();
+
+    public function get(string $id);
 }

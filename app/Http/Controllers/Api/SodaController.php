@@ -34,4 +34,22 @@ class SodaController extends Controller
         }
     }
 
+    public function getAll()
+    {
+        try {
+            return $this->sodaService->getAll();
+        } catch (\HttpException $e) {
+            return ['message' => $e->getMessage(), 'status' => $e->getCode()];
+        }
+    }
+
+    public function get(string $id)
+    {
+        try {
+            return $this->sodaService->get($id);
+        } catch (\HttpException $e) {
+            return ['message' => $e->getMessage(), 'status' => $e->getCode()];
+        }
+    }
+
 }
