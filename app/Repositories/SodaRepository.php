@@ -19,10 +19,35 @@ class SodaRepository implements SodaRepositoryInterface
         }
     }
 
-    public function checkIfExists(string $brand, string $measure): bool
+    public function checkIfExists(string $brand, string $measure)
     {
         return Soda::where('brand', '=', $brand)
             ->where('measure', '=', $measure)
-            ->exists();
+            ->get()
+            ->toArray();
+    }
+
+    public function update(array $attributes, string $id)
+    {
+        $soda =  Soda::find($id);
+
+        $sodaInDB = $this->checkIfExists($attributes['brand'], $attributes['measure']);
+
+
+        if($id != $sodaInDB[0]['_id']) throw  new \Exception();
+
+        try {
+            $soda->brand = $attributes['brand'];
+            $soda->type = $attributes['type'];
+            $soda->unitPrice = $attributes['unitPrice'];
+            $soda->quantity = $attributes['quantity'];
+            $soda->measure = $attributes['measure'];
+            $soda->save();
+
+            return ['status' => 'success', 'message' => 'Refrigerante atualizado com sucesso'];
+        } catch (\Exception $exception) {
+            throw new HttpException(400, 'Houve um erro, refrigerante não atualizado');
+        }
+
     }
 }

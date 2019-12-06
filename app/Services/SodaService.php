@@ -17,21 +17,41 @@ class SodaService implements SodaServiceInterface
 
     public function store(array $attributes)
     {
-        $sodaAttributes = [
+        $sodaAttributes = $this->handleRequestValueToModel($attributes);
+
+        $hasInDb = $this->exists($sodaAttributes['brand'], $sodaAttributes['measure']);
+
+        if(!$hasInDb) return $this->sodaRepository->store($sodaAttributes);
+
+        throw new HttpException(422,"Já existe um refrigerante com esses dados");
+    }
+
+    public function update(array $attributes, string $id)
+    {
+        $sodaAttributes = $this->handleRequestValueToModel($attributes);
+
+        try{
+          return $this->sodaRepository->update($sodaAttributes, $id);
+        } catch (\Exception $e) {
+            throw new HttpException(422,"Já existe um refrigerante com esses dados");
+        }
+
+    }
+
+    private function handleRequestValueToModel(array $attributes): array
+    {
+        return [
             'brand' => $attributes['brand'],
             'type' => $attributes['type'],
             'unitPrice' => $attributes['unitPrice'],
             'quantity' => $attributes['quantity'],
             'measure' => "${attributes['measureValue']} ${attributes['measureUnit']}",
         ];
+    }
 
-        $hasInDb = $this->sodaRepository
-            ->checkIfExists($sodaAttributes['brand'], $sodaAttributes['measure']);
-
-        if(!$hasInDb){
-            return $this->sodaRepository->store($sodaAttributes);
-        }
-
-        throw new HttpException(422,"Já existe um refrigerante com esses dados");
+    private function exists(string $brand, string $measure)
+    {
+       return $this->sodaRepository
+            ->checkIfExists($brand, $measure);
     }
 }
