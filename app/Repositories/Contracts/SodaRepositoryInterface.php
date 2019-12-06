@@ -13,4 +13,7 @@ interface SodaRepositoryInterface
     public function getAll();
 
     public function get(string $id);
+
+    public function delete($id);
+
 }

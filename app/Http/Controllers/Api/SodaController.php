@@ -52,4 +52,13 @@ class SodaController extends Controller
         }
     }
 
+    public function delete($id)
+    {
+        try {
+            return $this->sodaService->delete($id);
+        } catch (\HttpException $e) {
+            return ['message' => $e->getMessage(), 'status' => $e->getCode()];
+        }
+    }
+
 }

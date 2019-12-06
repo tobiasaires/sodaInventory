@@ -12,4 +12,6 @@ interface SodaServiceInterface
 
     public function get(string $id);
 
+    public function delete($json);
+
 }

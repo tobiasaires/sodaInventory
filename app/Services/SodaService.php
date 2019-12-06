@@ -55,6 +55,21 @@ class SodaService implements SodaServiceInterface
         }
     }
 
+    public function delete($json)
+    {
+       $json = json_decode($json);
+
+        $array = array_map(function($sodaId) {
+            return $sodaId;
+        }, $json->id);
+
+        try {
+            return $this->sodaRepository->delete($array);
+        } catch (\HttpException $e) {
+            throw new HttpException($e->getCode(), $e->getMessage());
+        }
+    }
+
     private function handleRequestValueToModel(array $attributes): array
     {
         return [
@@ -71,5 +86,4 @@ class SodaService implements SodaServiceInterface
        return $this->sodaRepository
             ->checkIfExists($brand, $measure);
     }
-
 }

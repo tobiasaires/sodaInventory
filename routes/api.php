@@ -22,4 +22,5 @@ Route::group(['prefix' => 'soda'], function () {
     Route::put('update/{id}', 'SodaController@update');
     Route::get('/', 'SodaController@getAll');
     Route::get('/{id}', 'SodaController@get');
+    Route::delete('/{json}/delete', 'SodaController@delete');
 });

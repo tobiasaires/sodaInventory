@@ -74,4 +74,15 @@ class SodaRepository implements SodaRepositoryInterface
 
         return $soda;
     }
+
+    public function delete($json)
+    {
+        try {
+            Soda::destroy($json);
+        } catch (\Exception $exception) {
+            throw new HttpException(400, 'Houve um erro ao deletar refrigerante');
+        }
+
+        return ['status' => 'success', 'message' => 'Refrigerante excluido com sucesso'];
+    }
 }
