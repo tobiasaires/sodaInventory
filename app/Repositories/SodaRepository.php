@@ -54,7 +54,7 @@ class SodaRepository implements SodaRepositoryInterface
     public function getAll()
     {
         try {
-            return Soda::all();
+            return Soda::paginate(10);
         } catch (\Exception $exception) {
             throw new HttpException(400, 'Houve um erro');
         }
