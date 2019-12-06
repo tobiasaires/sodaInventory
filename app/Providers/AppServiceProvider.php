@@ -13,7 +13,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(
+            'App\Services\Contracts\SodaServiceInterface',
+            'App\Services\SodaService',
+        );
+
+        $this->app->bind(
+            'App\Repositories\Contracts\SodaRepositoryInterface',
+            'App\Repositories\SodaRepository'
+        );
     }
 
     /**
