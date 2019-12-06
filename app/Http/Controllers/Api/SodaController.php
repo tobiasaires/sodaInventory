@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\Contracts\SodaServiceInterface;
-use Illuminate\Http\Request;
+use App\Http\Requests\SodaRequest;
 
 class SodaController extends Controller
 {
@@ -15,11 +15,15 @@ class SodaController extends Controller
         $this->sodaService = $sodaService;
     }
 
-    public function create(Request $request)
+    public function create(SodaRequest $request)
     {
-        $soda = $this->sodaService->store($request->all());
+        try {
+            $soda = $this->sodaService->store($request->all());
 
-        return response()->json($soda);
+            return $soda;
+        } catch (\HttpException $e) {
+            return ['message' => $e->getMessage(), 'status' => $e->getCode()];
+        }
     }
 
 }
