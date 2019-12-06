@@ -20,4 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'soda'], function () {
     Route::post('create', 'SodaController@create');
     Route::put('update/{id}', 'SodaController@update');
+    Route::get('/', 'SodaController@getAll');
+    Route::get('/{id}', 'SodaController@get');
 });

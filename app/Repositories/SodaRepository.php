@@ -50,4 +50,28 @@ class SodaRepository implements SodaRepositoryInterface
         }
 
     }
+
+    public function getAll()
+    {
+        try {
+            return Soda::all();
+        } catch (\Exception $exception) {
+            throw new HttpException(400, 'Houve um erro');
+        }
+    }
+
+    public function get(string $id)
+    {
+        try {
+            $soda = Soda::find($id);
+        } catch (\Exception $exception) {
+            throw new HttpException(400, 'Houve um erro');
+        }
+
+        if(!$soda) {
+            throw new HttpException(404, 'Refrigerante não econtrado');
+        }
+
+        return $soda;
+    }
 }

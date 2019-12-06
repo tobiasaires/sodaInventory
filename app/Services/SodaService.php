@@ -35,7 +35,24 @@ class SodaService implements SodaServiceInterface
         } catch (\Exception $e) {
             throw new HttpException(422,"Já existe um refrigerante com esses dados");
         }
+    }
 
+    public function getAll()
+    {
+        try{
+            return $this->sodaRepository->getAll();
+        } catch (\Exception $e) {
+            throw new HttpException(400,"Não foi possível buscar os refrigerantes");
+        }
+    }
+
+    public function get(string $id)
+    {
+        try{
+            return $this->sodaRepository->get($id);
+        } catch (\HttpException $e) {
+            throw new HttpException($e->getCode(), $e->getMessage());
+        }
     }
 
     private function handleRequestValueToModel(array $attributes): array
@@ -54,4 +71,5 @@ class SodaService implements SodaServiceInterface
        return $this->sodaRepository
             ->checkIfExists($brand, $measure);
     }
+
 }

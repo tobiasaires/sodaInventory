@@ -8,4 +8,8 @@ interface SodaServiceInterface
 
     public function update(array $attributes, string $id);
 
+    public function getAll();
+
+    public function get(string $id);
+
 }
