@@ -182,11 +182,14 @@
         this.dialog = true
       },
 
-      deleteItem (selected) {
-        // const index = this.soda.indexOf(item)
-        // confirm('Are you sure you want to delete this item?') && this.soda.splice(index, 1)
-
-        console.log(selected);
+       deleteItem (selected) {
+        const array = Array.from(selected);
+        array.map( item => {
+            axios.delete(`http://localhost/api/soda/${item._id}/delete`).then(() => {
+                        let i = this.soda.indexOf(item);
+                        this.soda.splice(i, 1)
+                    });
+        })
       },
 
       close () {
