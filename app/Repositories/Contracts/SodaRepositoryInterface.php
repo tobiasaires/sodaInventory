@@ -6,7 +6,7 @@ interface SodaRepositoryInterface
 {
     public function store(array $attributes): array ;
 
-    public function checkIfExists(string $brand, string $measure);
+    public function checkIfExists(string $brand, string $measureValue, string $measureUnit);
 
     public function update(array $attributes, string $id);
 

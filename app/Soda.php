@@ -9,6 +9,6 @@ class Soda extends Eloquent {
     protected $connection = 'mongodb';
     protected $collection = 'soda';
 
-    protected $fillable = ['brand', 'measure', 'type', 'unitPrice', 'quantity'];
+    protected $fillable = ['brand', 'measureValue', 'measureUnit','type', 'unitPrice', 'quantity'];
 
 }
