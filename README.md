@@ -1,78 +1,144 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+# Soda Inventory
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+## Descrição
+Um projeto para fazer o gerenciamento de um estoque de refrigerantes. Por meio do qual, o funcionário poderá criar, editar, excluir e visualizar os refrigerantes cadastrados no estoque.
 
-## About Laravel
+Obs: Não é possível criar um refrigerante que já exista no banco de dados, ex: Se existe uma Coca-Cola de 2 L, não poderá criar outra com o mesmo nome e litragem, o mesmo vale para a edição.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tecnologias Usadas
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 7.3
+- MongoDb
+- Laravel
+- Vue (Vuetify)
+- Docker
 
-## Learning Laravel
+## Instalação
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Primeiro você precisa clonar esse repositório:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    git clone https://github.com/tobiasaires/sodaInventory
+    
+E depois
 
-## Laravel Sponsors
+    ./docker-run.sh
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
+A api estará rodando na porta 80, já o Vue.js na porta 8081
 
-## Contributing
+## Documentação
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Todos os retornos da Api são no formato de JSON.
+### Obs:
+Todos os campos são obrigatórios.
 
-## Code of Conduct
+### Criar Refrigerante
++ POST /api/soda/create
+### Body
+```json
+{
+	"brand": "String",
+	"measureUnit": "String",
+	"measureValue": "String | Integer",
+	"type": "String",
+	"quantity": "String | Integer",
+	"unitPrice": "String"
+}
+```
+### Response 
+```json
+"status": "success",
+"message": "Refrigerante criado com sucesso",
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Atualizar Refrigerante
++ PUT /api/soda/update/{id}
+### Body
+```json
+{
+	"brand": "String",
+	"measureUnit": "String",
+	"measureValue": "String | Integer",
+	"type": "String",
+	"quantity": "String | Integer",
+	"unitPrice": "String"
+}
+```
+### Response 
+```json
+"status": "success",
+"message": "Refrigerante atualizado com sucesso",
+"data": {
+	"brand": "String",
+	"measureUnit": "String",
+	"measureValue": "String | Integer",
+	"type": "String",
+	"quantity": "String | Integer",
+	"unitPrice": "String"
+}
+```
 
-## Security Vulnerabilities
+### Deletar Refrigerante
++ DELETE /api/soda/{id}/DELETE
+### Response 
+```json
+"status": "success",
+"message": "Refrigerante excluído com sucesso",
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Listar Todos os Refrigerantes
++ GET /api/soda/
+### Response 
+```json
+[{
+	"brand": "String",
+	"measureUnit": "String",
+	"measureValue": "String | Integer",
+	"type": "String",
+	"quantity": "String | Integer",
+	"unitPrice": "String"
+}]
+```
 
-## License
+### Listar Um Refrigerante Refrigerantes
++ GET /api/soda/{id}
+### Response 
+```json
+[{
+	"brand": "String",
+	"measureUnit": "String",
+	"measureValue": "String | Integer",
+	"type": "String",
+	"quantity": "String | Integer",
+	"unitPrice": "String"
+}]
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Errors
+
+Em casos de erros na api o status code será 422 ou 400.
+ 400 -> Erros de validação
+ 422 -> Erro de tentar criar ou atualizar um refrigerante para um que já existe no banco
+
+### 400
+```json
+"sucess": false,
+"http_code": 400,
+"message": "The given data was invalid.",
+"errors": {
+    ...
+  }
+```
+
+### 422
+```json
+  "status": false,
+  "message": "Já existe um refrigerante com esses dados",
+```
+
+### Melhorias
++ Adicionar autenticação JWT
++ Melhorias de UI/UX
++ Melhorias nos Formulários de Criação e Edição (Validação dos dados no frontend)
++ Adicionar Tela de Login
