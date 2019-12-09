@@ -1,21 +1,13 @@
 <template>
   <v-app>
-      <SodaComponent />
+      <div class="container">
+        <router-view></router-view>
+    </div>
   </v-app>
 </template>
 
 <script>
-import SodaComponent from './components/SodaComponent';
 
 export default {
-  name: 'App',
-
-  components: {
-    SodaComponent,
-  },
-
-  data: () => ({
-    //
-  }),
 };
 </script>

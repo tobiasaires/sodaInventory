@@ -1,4 +1,5 @@
 <template>
+
   <v-data-table
     :headers="headers"
     :items="soda"
@@ -7,7 +8,7 @@
     show-select
     :single-select="singleSelect"
     v-model="selected"
-    item-key="brand"
+    item-key="_id"
   >
     <template v-slot:top>
       <v-toolbar flat color="white">
@@ -32,54 +33,78 @@
           </template>
           <v-card>
             <v-card-title>
-              <span class="headline">{{ formTitle }}</span>
+              <span class="headline">Novo</span>
             </v-card-title>
 
             <v-card-text>
               <v-container>
-                <v-row>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.brand" label="Marca"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.type" label="Tipo"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.unitPrice" label="Preço Unitário"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.measureType" label="Valor de Medida"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.measureUnit" label="Unidade de Medida"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.quantity" label="Quantidade"></v-text-field>
-                  </v-col>
-                </v-row>
+                <v-form
+                  ref="form"
+                  v-model="valid"
+                  lazy-validation
+                >
+                    <v-row>
+                    <v-col cols="12" sm="6" md="4">
+                        <v-text-field
+                        v-model="defaultItem.brand"
+                        label="Marca"
+                        :rules="[rules.required]"
+                        maxLength="30"
+                        outlined
+                        required
+                        >
+                        </v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                        <v-select
+                            :items="itemsType"
+                            label="Tipo"
+                            v-model="defaultItem.type"
+                            outlined
+                            :rules="[rules.required]"
+                        ></v-select>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                         <v-text-field v-money="money" v-model="defaultItem.unitPrice" outlined :rules="[rules.required]"  label="Preço Unitário"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                        <v-text-field outlined :rules="[rules.required]" v-model="defaultItem.measureValue" label="Valor de Medida"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                        <v-select
+                            :items="itemsMeasureUnit"
+                            label="Unidade de Medida"
+                            v-model="defaultItem.measureUnit"
+                            outlined
+                            :rules="[rules.required]"
+                            required
+                        ></v-select>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                        <v-text-field  outlined :rules="[rules.required]" v-model="defaultItem.quantity" type="number" min=0 label="Quantidade"></v-text-field>
+                    </v-col>
+                    </v-row>
+                </v-form>
               </v-container>
             </v-card-text>
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-              <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+              <v-btn color="blue darken-1" text @click="close">Cancelar</v-btn>
+              <v-btn :disabled="!valid" color="blue darken-1" text @click="save">Salvar</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
       </v-toolbar>
     </template>
     <template v-slot:item.action="{ item }">
-      <v-btn
-        small
-        depressed
-        fab
-        class="mr-2"
-        color="white"
-        @click="editItem(item)"
-      >
-        <v-icon>{{ icons.mdiPencil }}</v-icon>
-      </v-btn>
+         <router-link
+         :to="{name: 'edit', params: { id: item._id }}"
+         >
+         <v-icon>
+             {{ icons.mdiPencil }}
+        </v-icon>
+        </router-link>
     </template>
     <template v-slot:no-data>
       <v-btn color="primary" @click="initialize">Reset</v-btn>
@@ -89,13 +114,31 @@
 
 <script>
 
+  import axios from 'axios';
   import { mdiDelete, mdiPencil } from '@mdi/js'
+  import {VMoney} from 'v-money'
+
   export default {
     data: () => ({
       dialog: false,
+      valid: true,
+      timeout: 2000,
       singleSelect: false,
       search: '',
+      itemsType: ['Pet', 'Garrafa', 'Lata'],
+      itemsMeasureUnit: ['mL', 'L'],
       icons: {mdiDelete, mdiPencil},
+      loading: true,
+      money: {
+        decimal: ',',
+        thousands: '.',
+        prefix: 'R$ ',
+        precision: 2,
+        masked: true
+      },
+      rules: {
+          required: value => !!value || 'Required.',
+        },
       selected: [],
       headers: [
         {
@@ -106,38 +149,21 @@
         },
         { text: 'Tipo', value: 'type' },
         { text: 'Preço Unitário R$', value: 'unitPrice' },
-        { text: 'Litragem', value: 'measure' },
+        { text: 'Litragem', value: 'measureValue' },
+        { text: 'Unidade de Medida', value: 'measureUnit'},
         { text: 'Quantidade', value: 'quantity' },
-        { text: 'Actions', value: 'action', sortable: false },
+        { text: 'Ação', value: 'action', sortable: false },
       ],
       soda: [],
-      editedIndex: -1,
-      editedItem: {
-        brand: '',
-        type: '',
-        unitPrice: 0,
-        measureValue: '',
-        measureUnit: 0,
-        quantity: 0,
-      },
       defaultItem: {
         brand: '',
         type: '',
-        unitPrice: 0,
+        unitPrice: '',
         measureValue: '',
-        measureUnit: 0,
-        quantity: 0,
+        measureUnit: '',
+        quantity: '',
       },
     }),
-
-    computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'Novo' : 'Editar'
-      },
-      disableButton() {
-        return this.selected == 0 ? true : false;
-      }
-    },
 
     watch: {
       dialog (val) {
@@ -150,36 +176,9 @@
     },
 
     methods: {
-      initialize () {
-        this.soda = [
-          {
-            _id: "5deb035e83b9b6000f356d5a",
-            brand: "Coca Cola",
-            type: "Pet",
-            unitPrice: "5.00",
-            quantity: 2,
-            measure: "5003214111100 mL",
-            updated_at: "2019-12-07 00:42:38",
-            created_at: "2019-12-07 00:42:38"
-          },
-          {
-            _id: "asjkdhkadjh",
-            brand: "Coca  Cola",
-            type: "Pet",
-            unitPrice: "5.00",
-            quantity: 1,
-            measure: "5003214111100 mL",
-            updated_at: "2019-12-07 00:42:38",
-            created_at: "2019-12-07 00:42:38"
-          },
-
-        ]
-      },
-
-      editItem (item) {
-        this.editedIndex = this.soda.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialog = true
+     async initialize () {
+        const request = await axios.get('http://localhost/api/soda');
+        this.soda = request.data
       },
 
        deleteItem (selected) {
@@ -195,19 +194,17 @@
       close () {
         this.dialog = false
         setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
+          this.defaultItem = Object.assign({}, this.defaultItem)
         }, 300)
       },
 
-      save () {
-        if (this.editedIndex > -1) {
-          Object.assign(this.soda[this.editedIndex], this.editedItem)
-        } else {
-          this.soda.push(this.editedItem)
-        }
+       save () {
+        axios.post('http://localhost/api/soda/create', this.defaultItem).then(() => {
+                this.soda.push(this.defaultItem);
+        });
         this.close()
       },
     },
+    directives: {money: VMoney}
   }
 </script>
