@@ -19,10 +19,11 @@ class SodaRepository implements SodaRepositoryInterface
         }
     }
 
-    public function checkIfExists(string $brand, string $measure)
+    public function checkIfExists(string $brand, string $measureValue, string $measureUnit)
     {
         return Soda::where('brand', '=', $brand)
-            ->where('measure', '=', $measure)
+            ->where('measureValue', '=', $measureValue)
+            ->where('measureUnit', '=', $measureUnit)
             ->get()
             ->toArray();
     }
@@ -31,20 +32,20 @@ class SodaRepository implements SodaRepositoryInterface
     {
         $soda =  Soda::find($id);
 
-        $sodaInDB = $this->checkIfExists($attributes['brand'], $attributes['measure']);
+        $sodaInDB = $this->checkIfExists($attributes['brand'], $attributes['measureValue'], $attributes['measureUnit']);
 
-
-        if($id != $sodaInDB[0]['_id']) throw  new \Exception();
+        if( isset($sodaInDB[0]['_id']) && $id != $sodaInDB[0]['_id']) throw  new \Exception();
 
         try {
             $soda->brand = $attributes['brand'];
             $soda->type = $attributes['type'];
             $soda->unitPrice = $attributes['unitPrice'];
             $soda->quantity = $attributes['quantity'];
-            $soda->measure = $attributes['measure'];
+            $soda->measureValue = $attributes['measureValue'];
+            $soda->measureUnit = $attributes['measureUnit'];
             $soda->save();
 
-            return ['status' => 'success', 'message' => 'Refrigerante atualizado com sucesso'];
+            return ['status' => 'success', 'message' => 'Refrigerante atualizado com sucesso', 'data' => $soda];
         } catch (\Exception $exception) {
             throw new HttpException(400, 'Houve um erro, refrigerante não atualizado');
         }
@@ -54,7 +55,7 @@ class SodaRepository implements SodaRepositoryInterface
     public function getAll()
     {
         try {
-            return Soda::paginate(10);
+            return Soda::all();
         } catch (\Exception $exception) {
             throw new HttpException(400, 'Houve um erro');
         }

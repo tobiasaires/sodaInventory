@@ -17,21 +17,17 @@ class SodaService implements SodaServiceInterface
 
     public function store(array $attributes)
     {
-        $sodaAttributes = $this->handleRequestValueToModel($attributes);
+        $hasInDb = $this->exists($attributes['brand'], $attributes['measureValue'], $attributes['measureUnit']);
 
-        $hasInDb = $this->exists($sodaAttributes['brand'], $sodaAttributes['measure']);
-
-        if(!$hasInDb) return $this->sodaRepository->store($sodaAttributes);
+        if(!$hasInDb) return $this->sodaRepository->store($attributes);
 
         throw new HttpException(422,"Já existe um refrigerante com esses dados");
     }
 
     public function update(array $attributes, string $id)
     {
-        $sodaAttributes = $this->handleRequestValueToModel($attributes);
-
         try{
-          return $this->sodaRepository->update($sodaAttributes, $id);
+          return $this->sodaRepository->update($attributes, $id);
         } catch (\Exception $e) {
             throw new HttpException(422,"Já existe um refrigerante com esses dados");
         }
@@ -55,35 +51,18 @@ class SodaService implements SodaServiceInterface
         }
     }
 
-    public function delete($json)
+    public function delete(string $id)
     {
-       $json = json_decode($json);
-
-        $array = array_map(function($sodaId) {
-            return $sodaId;
-        }, $json->id);
-
         try {
-            return $this->sodaRepository->delete($array);
+            return $this->sodaRepository->delete($id);
         } catch (\HttpException $e) {
             throw new HttpException($e->getCode(), $e->getMessage());
         }
     }
 
-    private function handleRequestValueToModel(array $attributes): array
-    {
-        return [
-            'brand' => $attributes['brand'],
-            'type' => $attributes['type'],
-            'unitPrice' => $attributes['unitPrice'],
-            'quantity' => $attributes['quantity'],
-            'measure' => "${attributes['measureValue']} ${attributes['measureUnit']}",
-        ];
-    }
-
-    private function exists(string $brand, string $measure)
+    private function exists(string $brand, string $measureValue, string $measureUnit)
     {
        return $this->sodaRepository
-            ->checkIfExists($brand, $measure);
+            ->checkIfExists($brand, $measureValue, $measureUnit);
     }
 }
