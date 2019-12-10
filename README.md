@@ -37,15 +37,17 @@ Primeiro você precisa clonar esse repositório:
 
   
 
-git clone https://github.com/tobiasaires/sodaInventory
+> git clone https://github.com/tobiasaires/sodaInventory
 
 E depois
-
-  
 
 > cd sodaInventory && ./docker-run.sh
 
  Ao subir os containers os **testes** serão realizados.
+
+Caso deseje pode rodar com o comando: 
+
+> docker-compose exec app sh -c "./vendor/phpunit/phpunit/phpunit tests/Feature/SodaTest.php"
   
 
 A api estará rodando na porta 80, já o Vue.js na porta 8080
