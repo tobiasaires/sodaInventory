@@ -4,6 +4,9 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\Debug\Exception\FlattenException;
 
 class Handler extends ExceptionHandler
 {
@@ -13,7 +16,11 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        \Illuminate\Auth\AuthenticationException::class,
+        \Illuminate\Auth\Access\AuthorizationException::class,
+        \Symfony\Component\HttpKernel\Exception\HttpException::class,
+        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+        \Illuminate\Session\TokenMismatchException::class,
     ];
 
     /**
@@ -25,6 +32,46 @@ class Handler extends ExceptionHandler
         'password',
         'password_confirmation',
     ];
+
+    private function getExceptionClass($exception)
+    {
+        if (config('app.debug')) {
+            return get_class($exception);
+        }
+        return null;
+    }
+
+    private function getExceptionMessageString($exception)
+    {
+        if (config('app.debug')) {
+            return $exception->getMessage();
+        }
+
+        $messageStatusCode = Response::$statusTexts[$exception->getStatusCode()];
+
+        return $messageStatusCode;
+    }
+
+    private function getTrace($exception)
+    {
+        if (config('app.debug')) {
+            return 'file: ' . $exception->getFile() . ' line: ' . $exception->getLine();
+        }
+        return null;
+    }
+
+    protected function invalidJson($request, ValidationException $exception)
+    {
+        $jsonResponse = [
+            'sucess' => false,
+            'http_code' => 400,
+            'exception' => $this->getExceptionClass($exception),
+            'message' => $exception->getMessage(),
+            'errors' => $exception->validator->getMessageBag(),
+        ];
+
+        return response()->json($jsonResponse, 400);
+    }
 
     /**
      * Report or log an exception.
@@ -48,4 +95,20 @@ class Handler extends ExceptionHandler
     {
         return parent::render($request, $exception);
     }
+
+    protected function prepareJsonResponse($request, Exception $exception)
+    {
+
+        $customException = FlattenException::create($exception);
+
+        $jsonResponse = [
+            'success' => false,
+            'exception' => $this->getExceptionClass($exception),
+            'http_code' => $customException->getStatusCode(),
+            'message' => $this->getExceptionMessageString($exception),
+        ];
+
+        return response()->json($jsonResponse, $jsonResponse['http_code']);
+    }
+
 }
