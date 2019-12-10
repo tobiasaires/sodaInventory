@@ -201,6 +201,7 @@
        save () {
         axios.post('http://localhost/api/soda/create', this.defaultItem).then(() => {
                 this.soda.push(this.defaultItem);
+                this.initialize();
         });
         this.close()
       },

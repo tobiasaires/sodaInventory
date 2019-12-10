@@ -1,7 +1,4 @@
 version: '3'
-networks:
-  mongo-compose-network:
-    driver: bridge
 
 volumes:
   soda-inventory-data:
@@ -9,32 +6,12 @@ volumes:
 
 services:
   app:
-    build: .
+    image: ambientum/php:7.3-nginx
     container_name: app
     volumes:
       - .:/var/www/app
     ports:
       - "80:8080"
-      - "8081:8081"
-    links:
-      - mongo
-    networks:
-      - mongo-compose-network
-  mongo-express:
-    image: mongo-express
-    ports:
-      - 8082:8081
-    environment:
-      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASS}
-      ME_CONFIG_MONGODB_PORT: 27017
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${DB_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${DB_PASSWORD}
-    links:
-      - mongo
-    networks:
-      - mongo-compose-network
-
   mongo:
     image: mongo
     environment:
@@ -44,5 +21,8 @@ services:
       - "27017:27017"
     volumes:
       - soda-inventory-data:/data/db
-    networks:
-      - mongo-compose-network
+  web:
+    build: frontend/
+    ports: 
+      - "8080:8080"
+    
